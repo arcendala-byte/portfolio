@@ -1,6 +1,7 @@
 
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -12,6 +13,10 @@ import {
 } from "lucide-react";
 import { portfolio } from "@/data/portfolio";
 
+interface FooterProps {
+  copyrightSlot?: ReactNode;
+}
+
 const socialIcons = {
   github: Code,
   linkedin: BriefcaseBusiness,
@@ -21,11 +26,10 @@ const socialIcons = {
   external: ArrowUpRight,
 } as const;
 
-export function Footer() {
+export function Footer({ copyrightSlot }: FooterProps) {
   return (
     <footer className="relative overflow-hidden bg-[#111111] text-white">
       <div className="container-editorial py-16 sm:py-20 lg:py-24">
-        {/* Main footer content */}
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-8">
             <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/50">
@@ -46,32 +50,26 @@ export function Footer() {
               className="mt-8 inline-flex min-h-12 items-center gap-3 rounded-sm bg-accent px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
             >
               Start a conversation
-              <ArrowUpRight
-                aria-hidden="true"
-                className="h-4 w-4"
-              />
+              <ArrowUpRight aria-hidden="true" className="h-4 w-4" />
             </a>
 
-            
-<p className="mt-3 text-xs text-white/45">
-  {portfolio.profile.email}
-</p>
+            <p className="mt-3 text-xs text-white/45">
+              {portfolio.profile.email}
+            </p>
 
-<a
-  href="https://wa.me/254780003817"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="mt-2 inline-flex items-center gap-2 text-sm text-white/65 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-  aria-label="Contact ARC Ndala on WhatsApp at +254780003817"
->
-  <span>WhatsApp:</span>
-  <span>+254 780 003 817</span>
-  <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
-</a>
-
+            <a
+              href="https://wa.me/254780003817"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-2 text-sm text-white/65 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+              aria-label="Contact ARC Ndala on WhatsApp at +254780003817"
+            >
+              <span>WhatsApp:</span>
+              <span>+254 780 003 817</span>
+              <ArrowUpRight aria-hidden="true" className="h-3.5 w-3.5" />
+            </a>
           </div>
 
-          {/* Footer navigation */}
           <nav
             aria-label="Footer navigation"
             className="lg:col-span-3 lg:col-start-10"
@@ -97,7 +95,6 @@ export function Footer() {
           </nav>
         </div>
 
-        {/* Social links */}
         {portfolio.social.length > 0 && (
           <div className="mt-14 border-t border-white/15 pt-7 sm:mt-16">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -105,7 +102,6 @@ export function Footer() {
                 <p className="font-mono text-xs uppercase tracking-[0.16em] text-white/50">
                   Find me online
                 </p>
-
                 <p className="mt-2 text-sm text-white/65">
                   Connect, follow my work, or get in touch.
                 </p>
@@ -117,7 +113,6 @@ export function Footer() {
                     socialIcons[
                       social.icon as keyof typeof socialIcons
                     ] ?? ArrowUpRight;
-
                   const isEmail = social.icon === "mail";
 
                   return (
@@ -127,17 +122,10 @@ export function Footer() {
                         aria-label={social.label}
                         title={social.label}
                         target={isEmail ? undefined : "_blank"}
-                        rel={
-                          isEmail
-                            ? undefined
-                            : "noopener noreferrer"
-                        }
+                        rel={isEmail ? undefined : "noopener noreferrer"}
                         className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/70 transition-all hover:border-white/60 hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
                       >
-                        <Icon
-                          aria-hidden="true"
-                          className="h-4 w-4"
-                        />
+                        <Icon aria-hidden="true" className="h-4 w-4" />
                       </a>
                     </li>
                   );
@@ -147,7 +135,6 @@ export function Footer() {
           </div>
         )}
 
-        {/* Copyright and brand */}
         <div className="mt-10 flex flex-col gap-5 border-t border-white/15 pt-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-3">
             <Link
@@ -164,10 +151,7 @@ export function Footer() {
               />
             </Link>
 
-            <span
-              className="text-xs text-white/40"
-              aria-hidden="true"
-            >
+            <span className="text-xs text-white/40" aria-hidden="true">
               /
             </span>
 
@@ -177,19 +161,19 @@ export function Footer() {
 
             {portfolio.profile.location && (
               <>
-                <span
-                  className="text-xs text-white/40"
-                  aria-hidden="true"
-                >
+                <span className="text-xs text-white/40" aria-hidden="true">
                   /
                 </span>
-
                 <span className="text-xs text-white/50">
                   {portfolio.profile.location}
                 </span>
               </>
             )}
           </div>
+
+          {copyrightSlot && (
+            <div className="text-xs text-white/50">{copyrightSlot}</div>
+          )}
 
           <Link
             href="#home"
