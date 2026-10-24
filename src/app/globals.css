@@ -1,0 +1,866 @@
+@import "tailwindcss";
+
+@keyframes page-fade { from { opacity: 0; } to { opacity: 1; } }
+.page-fade { animation: page-fade 500ms ease-out both; }
+
+@keyframes skeleton-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+.skeleton-shimmer {
+  background-color: #efefec;
+}
+
+.skeleton-image {
+  transition: opacity 300ms ease, transform 500ms ease-out;
+}
+
+.skeleton-shimmer::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent);
+  animation: skeleton-shimmer 1.45s ease-in-out infinite !important;
+}
+
+/* =========================================================
+   DESIGN TOKENS Ã¢â‚¬â€ exposed via @theme so Tailwind utilities
+   (bg-background, text-foreground, font-display, etc.) work.
+   ========================================================= */
+@theme {
+  /* ---- Color system ---- */
+  --color-background: #FFFFFF;
+  --color-background-secondary: #F7F7F5;
+  --color-surface: #F2F2EF;
+  --color-surface-elevated: #EAEAE6;
+
+  --color-foreground: #111111;
+  --color-foreground-secondary: #4B4B4B;
+  --color-foreground-muted: #666666;
+
+  --color-border: rgba(0, 0, 0, 0.12);
+  --color-border-strong: rgba(0, 0, 0, 0.22);
+  --color-grid-line: rgba(0, 0, 0, 0.065);
+
+  /* Accent Ã¢â‚¬â€ muted amber. Swap this one value to retheme. */
+  --color-accent: #B45309;
+  --color-accent-soft: rgba(180, 83, 9, 0.12);
+  --color-accent-strong: #92400E;
+
+  /* ---- Typography ---- */
+  --font-sans: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
+
+  /* Fluid type scale */
+  --text-display-1: clamp(3rem, 10vw, 9rem);
+  --text-display-1--line-height: 0.92;
+  --text-display-1--letter-spacing: -0.035em;
+
+  --text-display-2: clamp(2.5rem, 7vw, 6rem);
+  --text-display-2--line-height: 0.96;
+  --text-display-2--letter-spacing: -0.03em;
+
+  --text-display-3: clamp(2rem, 5vw, 4rem);
+  --text-display-3--line-height: 1.02;
+  --text-display-3--letter-spacing: -0.025em;
+
+  --text-display-4: clamp(1.5rem, 3.2vw, 2.5rem);
+  --text-display-4--line-height: 1.1;
+  --text-display-4--letter-spacing: -0.02em;
+
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.16em;
+
+  /* ---- Spacing rhythm ---- */
+  --spacing-section: clamp(4rem, 12vh, 10rem);
+  --spacing-gutter: clamp(1.25rem, 4vw, 2.5rem);
+  --spacing-container: 88rem;
+
+  /* ---- Radii ---- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* ---- Motion ---- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --duration-fast: 180ms;
+  --duration-base: 260ms;
+  --duration-slow: 420ms;
+  --duration-scene: 640ms;
+}
+
+/* =========================================================
+   BASE LAYER
+   ========================================================= */
+@layer base {
+  html {
+    color-scheme: light;
+    scroll-behavior: auto;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
+  body {
+    min-height: 100%;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background-color: var(--color-foreground);
+    color: var(--color-background);
+  }
+
+  /* Focus visible: visible, on-brand, never black-on-black */
+  :focus-visible {
+    outline: 2px solid var(--color-foreground);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Remove default focus outline on mouse users only */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Subtle custom scrollbar (Webkit + Firefox) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.20) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.14);
+    border-radius: 999px;
+    border: 2px solid var(--color-background);
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.24);
+  }
+
+  /* Consistent heading font weights Ã¢â‚¬â€ display headings use display family */
+  h1, h2, h3, h4 {
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Images: prevent layout shift, no drag */
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+
+  /* Buttons: reset default, inherit font */
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  /* Anchor: inherit color, no underline by default (we opt-in) */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Reduced motion: kill animations, keep transitions instant */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Global animation reset; explicitly enabled animations below use !important. */
+*, *::before, *::after {
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+.page-fade { animation: page-fade 500ms ease-out both !important; }
+@media (prefers-reduced-motion: reduce) {
+  .page-fade { animation: none !important; }
+  .skeleton-shimmer::after { animation: none !important; }
+}
+
+/* =========================================================
+   CUSTOM UTILITIES
+   ========================================================= */
+@layer utilities {
+  /* Centered editorial container with gutter */
+  .container-editorial {
+    width: 100%;
+    max-width: var(--spacing-container);
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* Standard vertical rhythm between sections */
+  .section-pad {
+    padding-block: var(--spacing-section);
+  }
+
+  /* Display headline shortcuts */
+  .display-1 {
+    font-family: var(--font-display);
+    font-size: var(--text-display-1);
+    line-height: var(--text-display-1--line-height);
+    letter-spacing: var(--text-display-1--letter-spacing);
+    overflow-wrap: break-word;
+    font-weight: 400;
+  }
+  .display-2 {
+    font-family: var(--font-display);
+    font-size: var(--text-display-2);
+    line-height: var(--text-display-2--line-height);
+    letter-spacing: var(--text-display-2--letter-spacing);
+    overflow-wrap: break-word;
+    font-weight: 400;
+  }
+  .display-3 {
+    font-family: var(--font-display);
+    font-size: var(--text-display-3);
+    line-height: var(--text-display-3--line-height);
+    letter-spacing: var(--text-display-3--letter-spacing);
+    overflow-wrap: break-word;
+    font-weight: 400;
+  }
+  .display-4 {
+    font-family: var(--font-sans);
+    font-size: var(--text-display-4);
+    line-height: var(--text-display-4--line-height);
+    letter-spacing: var(--text-display-4--letter-spacing);
+    overflow-wrap: break-word;
+    font-weight: 500;
+  }
+
+  /* Small uppercase section label */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    line-height: var(--text-eyebrow--line-height);
+    letter-spacing: var(--text-eyebrow--letter-spacing);
+    text-transform: uppercase;
+    color: var(--color-foreground-secondary);
+  }
+
+  /* Uppercase micro-label used for metadata */
+  .micro {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-foreground-muted);
+  }
+
+  /* Thin hairline divider */
+  .hairline {
+    border-color: var(--color-border);
+    border-style: solid;
+    border-width: 0;
+  }
+  .hairline-t { border-top-width: 1px; }
+  .hairline-b { border-bottom-width: 1px; }
+  .hairline-l { border-left-width: 1px; }
+  .hairline-r { border-right-width: 1px; }
+
+  /* Balanced text */
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+
+  /* Hide scrollbar but keep scroll */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Underline-on-hover link */
+  .link-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .link-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 1px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease-out-expo);
+  }
+  .link-underline:hover::after,
+  .link-underline:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Subtle grain overlay (optional, applied via ::before on a container) */
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* Accessibility: screen-reader-only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* Breathing animation for expandable process buttons */
+@keyframes process-button-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgb(180 83 9 / 0%);
+  }
+
+  50% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 5px rgb(180 83 9 / 14%);
+  }
+}
+
+.process-button-breathe {
+  animation: process-button-breathe 2s ease-in-out infinite !important;
+  will-change: transform, box-shadow;
+}
+
+@keyframes process-paragraph-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    filter: blur(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.process-paragraph-reveal {
+  animation: process-paragraph-reveal 480ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+
+/* Respect reduced-motion accessibility preferences */
+@media (prefers-reduced-motion: reduce) {
+  .process-button-breathe,
+  .process-paragraph-reveal {
+    animation: none !important;
+    will-change: auto;
+  }
+}
+
+/* Directional movement for the horizontal services indicator */
+@keyframes scroll-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ping,
+  .animate-\[scroll-nudge_1\.4s_ease-in-out_infinite\] {
+    animation: none !important;
+  }
+}
+
+
+/* =========================================================
+   THUNDER REVEAL — SERVICE SECTION HEADING
+   Works with the global animation reset above by explicitly
+   enabling these specific animations with !important.
+   ========================================================= */
+
+.thunder-heading {
+  position: relative;
+  isolation: isolate;
+}
+
+.thunder-visual {
+  white-space: normal;
+}
+
+.thunder-space {
+  white-space: pre-wrap;
+}
+
+.thunder-heading .thunder-letter {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(7px);
+  transform: translateY(0.22em);
+  will-change: opacity, filter, transform;
+}
+
+/* Bright flash sweeping across the heading. */
+.thunder-heading::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  inset: -0.12em -0.04em;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 32%,
+    rgb(255 255 255 / 0.12) 42%,
+    rgb(255 249 214 / 0.95) 49%,
+    rgb(180 83 9 / 0.32) 53%,
+    transparent 66%,
+    transparent 100%
+  );
+  transform: translateX(-110%);
+}
+
+.thunder-heading.is-revealing::before {
+  animation: thunder-flash 620ms ease-out both !important;
+}
+
+/* Brief lightning bolt at the start of the reveal. */
+.thunder-heading .thunder-lightning {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  top: -0.12em;
+  left: 46%;
+  width: 0.42em;
+  height: 1.12em;
+  opacity: 0;
+  background: #fff9d6;
+  clip-path: polygon(
+    58% 0%,
+    100% 0%,
+    63% 38%,
+    100% 38%,
+    22% 100%,
+    42% 55%,
+    0% 55%
+  );
+  filter: drop-shadow(0 0 5px #b45309)
+    drop-shadow(0 0 14px #fff9d6);
+}
+
+.thunder-heading.is-revealing .thunder-lightning {
+  animation: lightning-strike 620ms ease-out both !important;
+}
+
+/* Each letter starts after the lightning flash, with a staggered delay. */
+.thunder-heading.is-revealing .thunder-letter {
+  animation-name: thunder-letter-in !important;
+  animation-duration: 420ms !important;
+  animation-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1) !important;
+  animation-fill-mode: both !important;
+  animation-delay: var(--letter-delay, 720ms) !important;
+}
+
+@keyframes thunder-flash {
+  0% {
+    opacity: 0;
+    transform: translateX(-110%);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  35% {
+    opacity: 0.75;
+    transform: translateX(-15%);
+  }
+
+  48% {
+    opacity: 0.15;
+  }
+
+  60% {
+    opacity: 0.8;
+    transform: translateX(25%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(110%);
+  }
+}
+
+@keyframes lightning-strike {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  22% {
+    opacity: 0.15;
+  }
+
+  34% {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+
+  55% {
+    opacity: 0;
+  }
+}
+
+@keyframes thunder-letter-in {
+  0% {
+    opacity: 0;
+    filter: blur(7px);
+    transform: translateY(0.22em);
+  }
+
+  45% {
+    opacity: 0.75;
+    filter: blur(2px);
+    transform: translateY(-0.035em);
+  }
+
+  75% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0.015em);
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+/* Reduced-motion users see the complete heading without animation. */
+@media (prefers-reduced-motion: reduce) {
+  .thunder-heading .thunder-letter {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    will-change: auto;
+    animation: none !important;
+  }
+
+  .thunder-heading::before,
+  .thunder-heading .thunder-lightning {
+    display: none;
+    animation: none !important;
+  }
+}
+
+
+/* =========================================================
+   EXPERTISE — AMBER DUST, GLOWING SPARKS & FLOATING ORBS
+   ========================================================= */
+
+.expertise-particle-section {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.expertise-particle-field {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout paint;
+  background:
+    radial-gradient(
+      ellipse at 78% 24%,
+      rgb(180 83 9 / 12%),
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 15% 72%,
+      rgb(255 190 92 / 16%),
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 52% 50%,
+      rgb(255 238 198 / 34%),
+      transparent 60%
+    );
+}
+
+.expertise-particle-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Individual particles use their own coordinates and timing. */
+.expertise-light-particle {
+  position: absolute;
+  left: var(--particle-x);
+  top: var(--particle-y);
+  width: max(var(--particle-size), 4px);
+  height: max(var(--particle-size), 4px);
+  border-radius: 50%;
+  opacity: var(--particle-opacity, 0.82);
+  pointer-events: none;
+  transform: translate3d(0, 0, 0) scale(0.6);
+  will-change: transform, opacity;
+}
+
+/* Fine, understated golden dust. */
+.expertise-light-particle--dust {
+  background: rgb(180 83 9 / 92%);
+  box-shadow:
+    0 0 6px 2px rgb(180 83 9 / 52%),
+    0 0 16px 4px rgb(217 119 6 / 36%);
+}
+
+/* Bright, pin-sized sparks. */
+.expertise-light-particle--spark {
+  background: #fff9e9;
+  box-shadow:
+    0 0 5px 2px rgb(255 239 190 / 95%),
+    0 0 16px 4px rgb(217 119 6 / 68%),
+    0 0 26px 7px rgb(180 83 9 / 34%);
+}
+
+/* Larger background lights add depth without competing with text. */
+.expertise-light-particle--orb {
+  background: radial-gradient(
+    circle,
+    rgb(255 250 235 / 98%) 0%,
+    rgb(255 220 160 / 72%) 22%,
+    rgb(180 83 9 / 30%) 55%,
+    transparent 75%
+  );
+  box-shadow: 0 0 26px 9px rgb(180 83 9 / 32%);
+  filter: blur(1px);
+}
+
+/* Fine cross-shaped glints on a few sparks. */
+.expertise-light-particle--spark::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 249 220 / 78%),
+    transparent
+  );
+  transform: translate(-50%, -50%);
+  opacity: 0.75;
+}
+
+/* Higher specificity and !important override the global animation reset. */
+.expertise-particle-section .expertise-light-particle {
+  animation:
+    expertise-particle-float
+    var(--particle-duration, 9s)
+    var(--particle-easing, ease-in-out)
+    var(--particle-delay, 0s)
+    infinite !important;
+  animation-play-state: running !important;
+}
+
+.expertise-particle-section .expertise-light-particle--spark {
+  animation-name: expertise-spark-twinkle !important;
+  animation-play-state: running !important;
+}
+
+/* Different paths create a less mechanical, drifting motion. */
+@keyframes expertise-particle-float {
+  0% {
+    opacity: clamp(0.38, var(--particle-opacity, 0.82), 0.68);
+    transform: translate3d(0, 18px, 0) scale(0.65);
+  }
+
+  16% {
+    opacity: clamp(0.7, var(--particle-opacity, 0.82), 1);
+  }
+
+  42% {
+    opacity: clamp(0.7, var(--particle-opacity, 0.82), 1);
+    transform: translate3d(var(--drift-x, 9px), -12px, 0) scale(1);
+  }
+
+  72% {
+    opacity: clamp(0.58, var(--particle-opacity, 0.82), 0.92);
+    transform: translate3d(
+      calc(var(--drift-x, 9px) * -0.5),
+      -32px,
+      0
+    ) scale(0.86);
+  }
+
+  100% {
+    opacity: clamp(0.38, var(--particle-opacity, 0.82), 0.68);
+    transform: translate3d(0, -48px, 0) scale(0.55);
+  }
+}
+
+@keyframes expertise-spark-twinkle {
+  0%,
+  100% {
+    opacity: 0.48;
+    transform: translate3d(0, 12px, 0) scale(0.45);
+  }
+
+  18% {
+    opacity: 0.98;
+    transform: translate3d(2px, 3px, 0) scale(1);
+  }
+
+  30% {
+    opacity: 0.58;
+    transform: translate3d(4px, -3px, 0) scale(0.72);
+  }
+
+  43% {
+    opacity: 1;
+    transform: translate3d(1px, -9px, 0) scale(1.15);
+  }
+
+  68% {
+    opacity: 0.55;
+    transform: translate3d(var(--drift-x, 7px), -25px, 0) scale(0.85);
+  }
+}
+
+/* Each particle gets an independent position, size, and rhythm. */
+.expertise-light-particle-1  { --particle-x: 5%;  --particle-y: 19%; --particle-size: 4px;  --particle-duration: 6s;   --particle-delay: -2s;   --particle-opacity: .72; --drift-x: 18px; }
+.expertise-light-particle-2  { --particle-x: 12%; --particle-y: 65%; --particle-size: 8px;  --particle-duration: 8s;   --particle-delay: -5s;   --particle-opacity: .66; --drift-x: -15px; }
+.expertise-light-particle-3  { --particle-x: 19%; --particle-y: 36%; --particle-size: 4px;  --particle-duration: 5s;   --particle-delay: -3s;   --particle-opacity: .86; --drift-x: 12px; }
+.expertise-light-particle-4  { --particle-x: 26%; --particle-y: 82%; --particle-size: 5px;  --particle-duration: 7s;   --particle-delay: -4s;   --particle-opacity: .74; --drift-x: 20px; }
+.expertise-light-particle-5  { --particle-x: 33%; --particle-y: 24%; --particle-size: 14px; --particle-duration: 9s;   --particle-delay: -5s;   --particle-opacity: .68; --drift-x: -18px; }
+.expertise-light-particle-6  { --particle-x: 39%; --particle-y: 57%; --particle-size: 4px;  --particle-duration: 5.5s; --particle-delay: -1s;  --particle-opacity: .84; --drift-x: 14px; }
+.expertise-light-particle-7  { --particle-x: 45%; --particle-y: 12%; --particle-size: 4px;  --particle-duration: 7.5s; --particle-delay: -6s;  --particle-opacity: .9;  --drift-x: -12px; }
+.expertise-light-particle-8  { --particle-x: 51%; --particle-y: 73%; --particle-size: 6px;  --particle-duration: 6s;   --particle-delay: -4s;   --particle-opacity: .76; --drift-x: 17px; }
+.expertise-light-particle-9  { --particle-x: 58%; --particle-y: 31%; --particle-size: 10px; --particle-duration: 8s;   --particle-delay: -6s;   --particle-opacity: .66; --drift-x: -20px; }
+.expertise-light-particle-10 { --particle-x: 64%; --particle-y: 88%; --particle-size: 4px;  --particle-duration: 5.2s; --particle-delay: -3s;  --particle-opacity: .92; --drift-x: 12px; }
+.expertise-light-particle-11 { --particle-x: 70%; --particle-y: 17%; --particle-size: 5px;  --particle-duration: 7s;   --particle-delay: -2.5s; --particle-opacity: .78; --drift-x: 19px; }
+.expertise-light-particle-12 { --particle-x: 75%; --particle-y: 57%; --particle-size: 4px;  --particle-duration: 5.8s; --particle-delay: -4s;  --particle-opacity: .86; --drift-x: -14px; }
+.expertise-light-particle-13 { --particle-x: 81%; --particle-y: 35%; --particle-size: 16px; --particle-duration: 9s;   --particle-delay: -6s;   --particle-opacity: .62; --drift-x: 16px; }
+.expertise-light-particle-14 { --particle-x: 86%; --particle-y: 78%; --particle-size: 4px;  --particle-duration: 5.4s; --particle-delay: -2.5s; --particle-opacity: .92; --drift-x: -12px; }
+.expertise-light-particle-15 { --particle-x: 92%; --particle-y: 23%; --particle-size: 6px;  --particle-duration: 7.5s; --particle-delay: -5s;   --particle-opacity: .78; --drift-x: -17px; }
+.expertise-light-particle-16 { --particle-x: 97%; --particle-y: 61%; --particle-size: 4px;  --particle-duration: 5.8s; --particle-delay: -3s;  --particle-opacity: .86; --drift-x: 13px; }
+.expertise-light-particle-17 { --particle-x: 23%; --particle-y: 49%; --particle-size: 4px;  --particle-duration: 4.8s; --particle-delay: -1.5s; --particle-opacity: .92; --drift-x: 10px; }
+.expertise-light-particle-18 { --particle-x: 67%; --particle-y: 68%; --particle-size: 5px;  --particle-duration: 6.5s; --particle-delay: -4s;  --particle-opacity: .78; --drift-x: -16px; }
+
+/* Keep the effect delicate on smaller screens. */
+@media (max-width: 640px) {
+  .expertise-particle-field {
+    background:
+      radial-gradient(
+        ellipse at 78% 24%,
+        rgb(180 83 9 / 9%),
+        transparent 42%
+      ),
+      radial-gradient(
+        ellipse at 15% 72%,
+        rgb(255 190 92 / 12%),
+        transparent 44%
+      );
+  }
+
+  .expertise-light-particle--orb {
+    opacity: 0.7;
+  }
+}
+
+/* Reduced motion: retain a quiet static glow, no drifting. */
+@media (prefers-reduced-motion: reduce) {
+  .expertise-particle-section .expertise-light-particle,
+  .expertise-particle-section .expertise-light-particle--spark {
+    animation: none !important;
+    opacity: 0.68;
+    transform: none;
+    filter: none;
+    will-change: auto;
+  }
+}
+
