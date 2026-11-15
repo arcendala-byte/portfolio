@@ -3,9 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { ArrowLeft, ArrowRight, ImagePlus, X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Reveal } from "@/components/effects/Reveal";
 import { SkeletonImage } from "@/components/effects/SkeletonImage";
 import { visualArchive } from "@/data/archive";
+import { ScrollZoomHeading } from "@/components/effects/ScrollZoomHeading";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
 const archiveLayout = [
   { size: "md:col-span-7 md:row-span-2", ratio: "aspect-[4/3] md:aspect-auto md:min-h-[32rem]" },
@@ -24,7 +27,9 @@ const entranceDirections = [
 ];
 
 export function VisualArchiveSection() {
+  const { translate } = useSitePreferences();
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const prefersReducedMotion = useReducedMotion();
   const viewableImages = visualArchive.filter((slot) => Boolean(slot.src));
 
   const closeViewer = () => setActiveImageIndex(null);
@@ -47,12 +52,11 @@ export function VisualArchiveSection() {
       <Reveal>
         <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="eyebrow">Visual archive</p>
-            <h2 className="mt-4 max-w-3xl font-display text-4xl leading-[0.98] tracking-[-0.04em] text-foreground sm:text-6xl">Notes from the process.</h2>
+            <p className="eyebrow">{translate("Visual archive")}</p>
+            <ScrollZoomHeading className="mt-4 max-w-3xl font-display text-4xl leading-[0.98] tracking-[-0.04em] text-foreground sm:text-6xl">{translate("Notes from the process.")}</ScrollZoomHeading>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-foreground-secondary">
-            Browse project details, works in progress, and moments behind the
-            finished work. Select any image to view it up close.
+            {translate("Browse project details, works in progress, and moments behind the finished work. Select any image to view it up close.")}
           </p>
         </div>
       </Reveal>
@@ -72,12 +76,13 @@ export function VisualArchiveSection() {
                         ),
                       )
                     }
-                    aria-label={`View ${slot.caption || slot.alt} larger`}
+                    aria-label={`${translate("View larger")}: ${translate(slot.caption || slot.alt)}`}
+                    data-archive-image
                     className="absolute inset-0 z-0 cursor-zoom-in focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
                   >
-                    <SkeletonImage src={slot.src} alt={slot.alt || slot.caption || "Visual archive photograph"} sizes="(max-width: 767px) 100vw, 58vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.035]" />
+                    <SkeletonImage src={slot.src} alt={translate(slot.alt || slot.caption || "Visual archive photograph")} sizes="(max-width: 767px) 100vw, 58vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.035]" />
                   </button>
-                  {(slot.caption || slot.alt) && <p className="absolute inset-x-0 bottom-0 z-10 bg-black/70 px-4 py-3 text-sm text-white">{slot.caption || slot.alt}</p>}
+                  {(slot.caption || slot.alt) &&                   <p className="absolute inset-x-0 bottom-0 z-10 bg-black/70 px-4 py-3 text-sm text-white">{translate(slot.caption || slot.alt)}</p>}
                 </>
               ) : (
                 <>
@@ -86,8 +91,8 @@ export function VisualArchiveSection() {
                     <ImagePlus className="h-4 w-4 text-foreground-muted" strokeWidth={1.5} aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Your image goes here</p>
-                    <p className="mt-1 text-xs text-foreground-muted">Add a picture in <code className="font-mono">public/archive/</code></p>
+                    <p className="text-sm font-medium">{translate("Your image goes here")}</p>
+                    <p className="mt-1 text-xs text-foreground-muted">{translate("Add a picture in")} <code className="font-mono">public/archive/</code></p>
                   </div>
                 </>
               )}
@@ -96,12 +101,17 @@ export function VisualArchiveSection() {
         })}
       </div>
 
-      {activeImage && (
-        <div
+      <AnimatePresence>
+        {activeImage && (
+        <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label="Visual archive image viewer"
+          aria-label={translate("Visual archive image viewer")}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 sm:p-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: prefersReducedMotion ? 0 : 0.24 }}
           onClick={(event) => {
             if (event.target === event.currentTarget) closeViewer();
           }}
@@ -115,7 +125,7 @@ export function VisualArchiveSection() {
           <button
             type="button"
             onClick={closeViewer}
-            aria-label="Close image viewer"
+            aria-label={translate("Close image viewer")}
             autoFocus
             className="absolute right-4 top-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/30 text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8 sm:top-8"
           >
@@ -125,17 +135,23 @@ export function VisualArchiveSection() {
           <button
             type="button"
             onClick={showPrevious}
-            aria-label="View previous image"
+            aria-label={translate("View previous image")}
             className="absolute left-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-8"
           >
             <ArrowLeft aria-hidden="true" className="h-5 w-5" />
           </button>
 
-          <figure className="relative flex h-full max-h-[85vh] w-full max-w-6xl flex-col items-center justify-center gap-4">
+          <motion.figure
+            className="relative flex h-full max-h-[85vh] w-full max-w-6xl flex-col items-center justify-center gap-4"
+            initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.97, filter: "blur(4px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.99 }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.3 }}
+          >
             <div className="relative min-h-0 w-full flex-1">
               <Image
                 src={activeImage.src}
-                alt={activeImage.alt || activeImage.caption || "Visual archive photograph"}
+                alt={translate(activeImage.alt || activeImage.caption || "Visual archive photograph")}
                 fill
                 sizes="100vw"
                 className="object-contain"
@@ -150,18 +166,19 @@ export function VisualArchiveSection() {
                 <span className="mt-1 block">{activeImage.alt}</span>
               )}
             </figcaption>
-          </figure>
+          </motion.figure>
 
           <button
             type="button"
             onClick={showNext}
-            aria-label="View next image"
+            aria-label={translate("View next image")}
             className="absolute right-3 top-1/2 z-20 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 text-white transition-colors hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-8"
           >
             <ArrowRight aria-hidden="true" className="h-5 w-5" />
           </button>
-        </div>
-      )}
+        </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

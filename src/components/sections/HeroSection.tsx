@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDown } from "lucide-react";
 import { portfolio } from "@/data/portfolio";
 import { Reveal } from "@/components/effects/Reveal";
 import { HeroVideoBackground } from "@/components/sections/HeroVideoBackground";
+import { LiquidLink } from "@/components/effects/LiquidLink";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
 const HERO_TEXT = "Building digital things with intent.";
 
@@ -16,6 +17,9 @@ const DESCRIPTIONS = [
 ];
 
 export function HeroSection() {
+  const { translate } = useSitePreferences();
+  const heroText = translate(HERO_TEXT);
+  const descriptions = useMemo(() => DESCRIPTIONS.map(translate), [translate]);
   const [typedText, setTypedText] = useState("");
   const [descriptionIndex, setDescriptionIndex] = useState(0);
   const [descriptionText, setDescriptionText] = useState("");
@@ -31,7 +35,7 @@ export function HeroSection() {
 
     if (prefersReducedMotion) {
       timeoutId = setTimeout(() => {
-        setTypedText(HERO_TEXT);
+        setTypedText(heroText);
         setTypingComplete(true);
       }, 0);
 
@@ -42,9 +46,9 @@ export function HeroSection() {
 
     const typeNextCharacter = () => {
       index += 1;
-      setTypedText(HERO_TEXT.slice(0, index));
+      setTypedText(heroText.slice(0, index));
 
-      if (index < HERO_TEXT.length) {
+      if (index < heroText.length) {
         timeoutId = setTimeout(typeNextCharacter, 75);
       } else {
         setTypingComplete(true);
@@ -54,7 +58,7 @@ export function HeroSection() {
     timeoutId = setTimeout(typeNextCharacter, 500);
 
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [heroText]);
 
   // Animate the rotating description.
   useEffect(() => {
@@ -66,7 +70,7 @@ export function HeroSection() {
 
     if (prefersReducedMotion) {
       timeoutId = setTimeout(() => {
-        setDescriptionText(DESCRIPTIONS[0]);
+        setDescriptionText(descriptions[0]);
       }, 0);
 
       return () => clearTimeout(timeoutId);
@@ -74,7 +78,7 @@ export function HeroSection() {
 
     let characterIndex = 0;
     let deleting = false;
-    const currentDescription = DESCRIPTIONS[descriptionIndex];
+    const currentDescription = descriptions[descriptionIndex];
 
     const animateDescription = () => {
       if (!deleting) {
@@ -103,7 +107,7 @@ export function HeroSection() {
 
         if (characterIndex <= 0) {
           setDescriptionIndex(
-            (previous) => (previous + 1) % DESCRIPTIONS.length
+            (previous) => (previous + 1) % descriptions.length
           );
 
           return;
@@ -122,11 +126,12 @@ export function HeroSection() {
     }, 0);
 
     return () => clearTimeout(timeoutId);
-  }, [descriptionIndex]);
+  }, [descriptionIndex, descriptions]);
 
   return (
     <section
       id="home"
+      data-story-hero
       className="relative isolate flex min-h-[100svh] scroll-mt-20 flex-col justify-center overflow-hidden bg-[#111111] py-24 text-white sm:py-32"
     >
       <HeroVideoBackground />
@@ -136,16 +141,19 @@ export function HeroSection() {
         aria-hidden="true"
       />
 
-      <div className="container-editorial relative z-10">
+      <div
+        data-story-hero-content
+        className="container-editorial relative z-10"
+      >
         <Reveal>
           <p className="eyebrow text-white/75">
-            {portfolio.profile.title}
+            {translate(portfolio.profile.title)}
           </p>
         </Reveal>
 
         <Reveal delay={0.08}>
           <h1
-            aria-label={HERO_TEXT}
+            aria-label={heroText}
             className="mt-8 max-w-6xl font-display text-[clamp(3.4rem,10vw,9.5rem)] leading-[0.87] tracking-[-0.055em] text-balance text-white"
           >
             <span aria-hidden="true">
@@ -177,16 +185,16 @@ export function HeroSection() {
             delay={0.22}
             className="sm:col-span-5 sm:col-start-7"
           >
-            <Link
+            <LiquidLink
               href="#work"
               className="inline-flex items-center gap-3 rounded-sm bg-accent px-5 py-3 text-sm font-medium text-white focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white"
             >
-              Explore selected work
+              {translate("Explore selected work")}
               <ArrowDown
                 className="h-4 w-4"
                 strokeWidth={1.5}
               />
-            </Link>
+            </LiquidLink>
           </Reveal>
         </div>
       </div>

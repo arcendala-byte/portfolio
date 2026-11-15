@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { portfolio } from "@/data/portfolio";
 import { LoadingScreen } from "@/components/layout/LoadingScreen";
+import { LenisProvider } from "@/components/layout/LenisProvider";
+import { SitePreferencesProvider } from "@/components/providers/SitePreferencesProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,8 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full antialiased max-lg:scrollbar-none`}
     >
       <body className="page-fade min-h-full bg-background text-foreground">
-        {children}
-        <LoadingScreen />
+        <SitePreferencesProvider>
+          <LenisProvider>{children}</LenisProvider>
+          <LoadingScreen />
+        </SitePreferencesProvider>
       </body>
     </html>
   );

@@ -4,18 +4,21 @@ import { motion, useReducedMotion } from "motion/react";
 import { Fragment } from "react";
 import { portfolio } from "@/data/portfolio";
 import { Reveal } from "@/components/effects/Reveal";
+import { ScrollZoomHeading } from "@/components/effects/ScrollZoomHeading";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
 export function AboutSection() {
+  const { translate } = useSitePreferences();
   const prefersReducedMotion = useReducedMotion();
-  const title = "Thoughtful software, made with care.";
+  const title = translate("Thoughtful software, made with care.");
   const words = title.split(" ");
 
   return (
     <section id="about" className="container-editorial section-pad scroll-mt-24">
       <div className="grid gap-12 md:grid-cols-12 md:gap-8">
         <Reveal className="md:col-span-4">
-          <p className="eyebrow">About</p>
-          <h2 aria-label={title} className="mt-7 max-w-sm font-display text-4xl leading-[1.04] tracking-[-0.03em] text-foreground sm:text-5xl">
+          <p className="eyebrow">{translate("About")}</p>
+          <ScrollZoomHeading label={title} className="mt-7 max-w-sm font-display text-4xl leading-[1.04] tracking-[-0.03em] text-foreground sm:text-5xl">
             <span aria-hidden="true" className="inline">
               {words.map((word, wordIndex) => (
                 <Fragment key={word}>
@@ -50,18 +53,18 @@ export function AboutSection() {
                 </Fragment>
               ))}
             </span>
-          </h2>
+          </ScrollZoomHeading>
         </Reveal>
         <div className="md:col-span-7 md:col-start-6">
           <Reveal delay={0.08}>
             <div className="space-y-5 text-base leading-relaxed text-foreground-secondary sm:text-lg">
-              {portfolio.profile.longBio.map((paragraph, i) => <p key={i}>{paragraph}</p>)}
+              {portfolio.profile.longBio.map((paragraph, i) => <p data-about-paragraph key={i}>{translate(paragraph)}</p>)}
             </div>
           </Reveal>
           <Reveal delay={0.15}>
-            <p className="mt-12 text-sm leading-relaxed text-foreground-secondary">Areas of interest</p>
+            <p className="mt-12 text-sm leading-relaxed text-foreground-secondary">{translate("Areas of interest")}</p>
             <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground">
-              {portfolio.profile.specialties.map((item) => <li key={item}>{item}</li>)}
+              {portfolio.profile.specialties.map((item) => <li key={item}>{translate(item)}</li>)}
             </ul>
           </Reveal>
         </div>

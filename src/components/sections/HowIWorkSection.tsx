@@ -1,8 +1,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Reveal } from "@/components/effects/Reveal";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
 const steps = [
   {
@@ -64,7 +66,10 @@ const steps = [
 ];
 
 export function HowIWorkSection() {
+  const { translate } = useSitePreferences();
   const [openSteps, setOpenSteps] = useState<string[]>([]);
+  const zoomRegionRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   function toggleStep(number: string) {
     setOpenSteps((current) =>
@@ -77,27 +82,36 @@ export function HowIWorkSection() {
   return (
     <section
       id="process"
-      className="container-editorial section-pad scroll-mt-24"
+      className="container-editorial scroll-mt-24 pb-16 sm:pb-24"
     >
-      <Reveal>
-        <div className="mb-10 grid gap-5 sm:mb-14 sm:grid-cols-12 sm:items-end">
-          <div className="sm:col-span-7">
-            <p className="eyebrow">How I work</p>
+      <div
+        ref={zoomRegionRef}
+        className="process-zoom-region"
+        data-reduced-motion={prefersReducedMotion}
+      >
+        <div className="process-zoom-stage">
+          <div className="process-zoom-copy">
+            <p className="eyebrow">{translate("How I work")}</p>
 
-            <h2 className="mt-4 max-w-3xl font-display text-4xl leading-[0.98] tracking-[-0.04em] text-foreground sm:text-6xl">
-              From the first idea to the final detail.
+            <h2
+              aria-label={translate("From the first idea to the final detail.")}
+              className="process-zoom-heading mt-5 max-w-5xl font-display text-4xl leading-[0.98] tracking-[-0.04em] text-foreground sm:text-6xl"
+              data-process-heading
+            >
+              {translate("From the first idea to the final detail.")}
             </h2>
+
+            <p
+              data-process-support
+              className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-foreground-secondary sm:text-base"
+            >
+              {translate("A thoughtful, practical approach to building digital products, combining clear planning, purposeful design, careful development, and continuous improvement.")}
+            </p>
           </div>
-
-          <p className="max-w-md text-sm leading-relaxed text-foreground-secondary sm:col-span-4 sm:col-start-9">
-            A thoughtful, practical approach to building digital products,
-            combining clear planning, purposeful design, careful development,
-            and continuous improvement.
-          </p>
         </div>
-      </Reveal>
+      </div>
 
-      <ol className="grid gap-x-8 md:grid-cols-2">
+      <ol data-process-steps className="process-steps grid gap-x-8 md:grid-cols-2">
         {steps.map((step, index) => {
           const isOpen = openSteps.includes(step.number);
           const descriptionId = `process-description-${step.number}`;
@@ -107,7 +121,7 @@ export function HowIWorkSection() {
               as="li"
               key={step.number}
               delay={index * 0.06}
-              className="group border-t border-black/15 py-6 transition-colors duration-300 hover:border-accent sm:py-8"
+              className="group border-t border-border py-6 transition-colors duration-300 hover:border-accent sm:py-8"
             >
               <div className="grid grid-cols-[3rem_1fr] gap-4 sm:grid-cols-[3.5rem_1fr]">
                 <span className="pt-2 font-mono text-xs text-foreground-muted transition-colors duration-300 group-hover:text-accent">
@@ -124,7 +138,7 @@ export function HowIWorkSection() {
                       className="group/title inline-flex items-center gap-3 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                     >
                       <h3 className="text-xl font-medium tracking-tight text-foreground transition-colors duration-300 group-hover/title:text-accent sm:text-2xl">
-                        {step.title}
+                        {translate(step.title)}
                       </h3>
 
                       <span
@@ -145,8 +159,8 @@ export function HowIWorkSection() {
                       </span>
                     </button>
 
-                    <span className="rounded-full border border-black/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-foreground-muted">
-                      {step.tag}
+                    <span className="rounded-full border border-border px-2.5 py-1 text-[10px] uppercase tracking-[0.12em] text-foreground-muted">
+                      {translate(step.tag)}
                     </span>
                   </div>
 
@@ -165,7 +179,7 @@ export function HowIWorkSection() {
                           isOpen ? "process-paragraph-reveal" : ""
                         }`}
                       >
-                        {step.description}
+                        {translate(step.description)}
                       </p>
                     </div>
                   </div>

@@ -8,19 +8,43 @@ import {
   useReducedMotion,
 } from "motion/react";
 import { portfolio } from "@/data/portfolio";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
-const LOADING_DURATION = 1800;
+const MINIMUM_LOADING_DURATION = 250;
+const MAXIMUM_LOADING_DURATION = 1200;
 
 export function LoadingScreen() {
+  const { translate } = useSitePreferences();
   const [visible, setVisible] = useState(true);
   const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      setVisible(false);
-    }, LOADING_DURATION);
+    const startedAt = performance.now();
+    let hideTimeout: number | undefined;
+    const fallbackTimeout = window.setTimeout(
+      () => setVisible(false),
+      MAXIMUM_LOADING_DURATION,
+    );
+    const hideWhenReady = () => {
+      window.clearTimeout(fallbackTimeout);
+      const remaining = Math.max(
+        0,
+        MINIMUM_LOADING_DURATION - (performance.now() - startedAt),
+      );
+      hideTimeout = window.setTimeout(() => setVisible(false), remaining);
+    };
 
-    return () => window.clearTimeout(timeout);
+    if (document.readyState === "complete") {
+      hideWhenReady();
+    } else {
+      window.addEventListener("load", hideWhenReady, { once: true });
+    }
+
+    return () => {
+      window.clearTimeout(fallbackTimeout);
+      if (hideTimeout !== undefined) window.clearTimeout(hideTimeout);
+      window.removeEventListener("load", hideWhenReady);
+    };
   }, []);
 
   const instantTransition = {
@@ -33,7 +57,7 @@ export function LoadingScreen() {
         <motion.div
           key="portfolio-loader"
           role="status"
-          aria-label="Loading portfolio"
+          aria-label={translate("Loading portfolio")}
           className="fixed inset-0 z-[100] flex min-h-[100svh] flex-col items-center justify-center overflow-hidden bg-background px-6 text-foreground"
           initial={
             reduceMotion
@@ -48,7 +72,7 @@ export function LoadingScreen() {
                   opacity: 0,
                   y: -24,
                   transition: {
-                    duration: 0.7,
+                    duration: 0.4,
                     ease: [0.76, 0, 0.24, 1],
                   },
                 }
@@ -90,8 +114,9 @@ export function LoadingScreen() {
               width={410}
               height={305}
               alt=""
-              priority
-              className="h-auto w-[min(68vw,20rem)]"
+              loading="eager"
+              unoptimized
+              className="theme-aware-logo h-auto w-[min(68vw,20rem)]"
             />
           </motion.div>
 

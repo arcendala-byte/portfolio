@@ -1,20 +1,9 @@
 "use client";
 
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { portfolio } from "@/data/portfolio";
 import { useActiveSection } from "@/hooks/useActiveSection";
-
-interface SiteShellContextValue {
-  activeId: string | null;
-}
-
-const SiteShellContext = createContext<SiteShellContextValue | null>(null);
-
-export function useSiteShell(): SiteShellContextValue {
-  const context = useContext(SiteShellContext);
-  if (!context) throw new Error("useSiteShell must be used inside <SiteShell>");
-  return context;
-}
+import { FloatingNavigation } from "@/components/navigation/FloatingNavigation";
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const sectionIds = useMemo(
@@ -24,8 +13,9 @@ export function SiteShell({ children }: { children: ReactNode }) {
   const activeId = useActiveSection(sectionIds);
 
   return (
-    <SiteShellContext.Provider value={{ activeId }}>
+    <>
+      <FloatingNavigation activeId={activeId} />
       {children}
-    </SiteShellContext.Provider>
+    </>
   );
 }

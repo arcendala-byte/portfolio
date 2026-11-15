@@ -34,12 +34,13 @@ export function NavigationLinks({
               onClick={onNavigate}
               aria-current={isActive ? "location" : undefined}
               className={cn(
-                "relative inline-flex min-h-10 items-center whitespace-nowrap rounded-sm px-1.5 py-1.5 xl:px-2",
-                "text-foreground-secondary hover:text-foreground",
+                "relative inline-flex min-h-10 items-center whitespace-nowrap rounded-full px-2 py-1.5 xl:px-2.5",
+                "text-foreground-secondary transition-colors duration-300 hover:bg-foreground/5 hover:text-foreground",
                 "focus-visible:text-foreground",
+                isActive && "bg-foreground/5 text-foreground",
               )}
             >
-              {isActive && <span className="absolute inset-x-2 bottom-0 h-px bg-foreground" aria-hidden="true" />}
+              {isActive && <span className="absolute inset-x-3 bottom-1 h-0.5 rounded-full bg-accent" aria-hidden="true" />}
               <span
                 className={cn(
                   "relative z-10",

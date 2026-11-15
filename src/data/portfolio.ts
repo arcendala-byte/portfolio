@@ -18,8 +18,8 @@ export const portfolio: PortfolioData = {
   accentColor: "#E8B04B",
 
   profile: {
-    fullName: "",
-    displayName: "",
+    fullName: "Arcel Ndala",
+    displayName: "Arcel Ndala",
     monogram: "AN",
     title: "Software Engineer",
 
@@ -442,4 +442,3 @@ experience: [
     },
   ],
 };
-

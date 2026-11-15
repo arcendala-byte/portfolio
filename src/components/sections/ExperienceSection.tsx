@@ -3,8 +3,10 @@
 
 import { portfolio } from "@/data/portfolio";
 import { Reveal } from "@/components/effects/Reveal";
+import { useSitePreferences } from "@/components/providers/SitePreferencesProvider";
 
 export function ExperienceSection() {
+  const { translate } = useSitePreferences();
   const experience = (portfolio.experience ?? []).filter((entry) => {
     const details = `${entry.organization} ${entry.role} ${entry.description}`;
 
@@ -30,10 +32,10 @@ export function ExperienceSection() {
     >
       <div className="grid gap-10 md:grid-cols-12 md:gap-8">
         <Reveal className="md:col-span-4">
-          <p className="eyebrow">Experience</p>
+          <p className="eyebrow">{translate("Experience")}</p>
 
           <h2 className="mt-7 font-display text-4xl leading-tight tracking-[-0.03em] text-foreground sm:text-5xl">
-            A record of the journey.
+            {translate("A record of the journey.")}
           </h2>
         </Reveal>
 
@@ -42,22 +44,22 @@ export function ExperienceSection() {
             <div className="space-y-8">
               {experience.map((entry, i) => (
                 <Reveal key={`${entry.organization}-${i}`}>
-                  <article className="grid gap-2 border-b border-black/10 pb-6 sm:grid-cols-[9rem_1fr] sm:gap-6">
+                  <article data-experience-entry className="grid gap-2 border-b border-border pb-6 sm:grid-cols-[9rem_1fr] sm:gap-6">
                     <p className="font-mono text-xs text-foreground-muted">
                       {entry.period}
                     </p>
 
                     <div>
                       <h3 className="text-base text-foreground">
-                        {entry.role}
+                        {translate(entry.role)}
                       </h3>
 
                       <p className="mt-1 text-sm text-foreground-secondary">
-                        {entry.organization}
+                        {translate(entry.organization)}
                       </p>
 
                       <p className="mt-3 text-sm leading-relaxed text-foreground-secondary">
-                        {entry.description}
+                        {translate(entry.description)}
                       </p>
 
                       {entry.achievements &&
@@ -65,7 +67,7 @@ export function ExperienceSection() {
                           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-relaxed text-foreground-secondary">
                             {entry.achievements.map((achievement, index) => (
                               <li key={`${entry.organization}-achievement-${index}`}>
-                                {achievement}
+                                {translate(achievement)}
                               </li>
                             ))}
                           </ul>
@@ -77,23 +79,23 @@ export function ExperienceSection() {
 
               {education.map((entry, i) => (
                 <Reveal key={`${entry.institution}-${i}`}>
-                  <article className="grid gap-2 border-b border-black/10 pb-6 sm:grid-cols-[9rem_1fr] sm:gap-6">
+                  <article data-experience-entry className="grid gap-2 border-b border-border pb-6 sm:grid-cols-[9rem_1fr] sm:gap-6">
                     <p className="font-mono text-xs text-foreground-muted">
                       {entry.period}
                     </p>
 
                     <div>
                       <h3 className="text-base text-foreground">
-                        {entry.qualification}
+                        {translate(entry.qualification)}
                       </h3>
 
                       <p className="mt-1 text-sm text-foreground-secondary">
-                        {entry.institution}
+                        {translate(entry.institution)}
                       </p>
 
                       {entry.description && (
                         <p className="mt-3 text-sm leading-relaxed text-foreground-secondary">
-                          {entry.description}
+                          {translate(entry.description)}
                         </p>
                       )}
                     </div>
@@ -104,8 +106,7 @@ export function ExperienceSection() {
           ) : (
             <Reveal>
               <p className="max-w-md text-base leading-relaxed text-foreground-secondary">
-                Professional experience and education details will be added
-                here.
+                {translate("Professional experience and education details will be added here.")}
               </p>
             </Reveal>
           )}

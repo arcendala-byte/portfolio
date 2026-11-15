@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { FloatingNavigation } from "@/components/navigation/FloatingNavigation";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
@@ -12,20 +11,17 @@ import { ExpertiseSection } from "@/components/sections/ExpertiseSection";
 import { ExperienceSection } from "@/components/sections/ExperienceSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { Footer } from "@/components/layout/Footer";
-import { useSiteShell } from "@/components/layout/SiteShell";
+import { FallingLeavesAtmosphere } from "@/components/effects/FallingLeavesAtmosphere";
+import { ScrollChoreography } from "@/components/effects/ScrollChoreography";
 
 interface HomeClientProps {
   copyrightSlot?: ReactNode;
 }
 
 export function HomeClient({ copyrightSlot }: HomeClientProps) {
-  const {
-    activeId,
-  } = useSiteShell();
-
   return (
     <>
-      <FloatingNavigation activeId={activeId} />
+      <FallingLeavesAtmosphere />
 
       <main className="relative">
         <div className="relative">
@@ -41,6 +37,7 @@ export function HomeClient({ copyrightSlot }: HomeClientProps) {
             <ContactSection />
           </div>
         </div>
+        <ScrollChoreography />
         <Footer copyrightSlot={copyrightSlot} />
       </main>
     </>
